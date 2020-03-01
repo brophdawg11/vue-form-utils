@@ -5,7 +5,7 @@ describe('WithValidation', () => {
 
     it('Renders the Slot', () => {
         cy.visit('storybook-static/index.html');
-        cy.get('#explorerwithvalidation--basic-usage').click();
+        cy.get('#explorerwithvalidation--basic-usage-input').click();
         cy.get('#storybook-preview-iframe')
             .then(($iframe) => cy.wrap($iframe.contents().find('body')).as('iframe'));
 
@@ -14,7 +14,7 @@ describe('WithValidation', () => {
 
     it('Displays proper validation in real-time', () => {
         cy.visit('storybook-static/index.html');
-        cy.get('#explorerwithvalidation--basic-usage').click();
+        cy.get('#explorerwithvalidation--basic-usage-input').click();
         cy.get('#storybook-preview-iframe')
             .then(($iframe) => cy.wrap($iframe.contents().find('body')).as('iframe'));
 
@@ -56,7 +56,7 @@ describe('WithValidation', () => {
 
     it('Indicates proper touched status', () => {
         cy.visit('storybook-static/index.html');
-        cy.get('#explorerwithvalidation--basic-usage').click();
+        cy.get('#explorerwithvalidation--basic-usage-input').click();
         cy.get('#storybook-preview-iframe')
             .then(($iframe) => cy.wrap($iframe.contents().find('body')).as('iframe'));
 

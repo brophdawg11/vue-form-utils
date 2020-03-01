@@ -23,10 +23,9 @@ module.exports = {
         // Don't enforce newlines on function parens
         'function-paren-newline': 'off',
         // Max length of 100 characters in source code
-        'max-len': ['error', {
-            code: 100,
-            ignoreUrls: true
-        }],
+        'max-len': ['error', { code: 100, ignoreUrls: true }],
+        // allow wearn ande rror consoles
+        'no-console': ['error', { allow: ['warn', 'error'] }],
         // Don't enforce one-var for now
         'one-var': 'off',
         // Put operators at the end of the lint (?, :, &&, ||)
@@ -53,6 +52,7 @@ module.exports = {
     }, {
         files: ['stories/**/*.js'],
         rules: {
+            'max-len': ['error', { code: 120, ignoreUrls: true }],
             'import/no-extraneous-dependencies': 'off'
         },
     }],
