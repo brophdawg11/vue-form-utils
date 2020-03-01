@@ -19,8 +19,7 @@ const fileTypeMap = {
 export default {
     input: 'src/index.js',
     output: {
-        // Global name of the component in UMD builds (i.e., window.DummyComponent)
-        name: 'DummyComponent',
+        name: 'WithValidation',
         file: `dist/${fileTypeMap[argv.format]}`,
         exports: 'named',
     },
@@ -36,7 +35,9 @@ export default {
                 isProduction: true,
             },
         }),
-        buble(),
+        buble({
+            objectAssign: 'Object.assign',
+        }),
         // Only minify browser (iife) version
         ...(argv.format === 'iife' ? [terser()] : []),
     ],
