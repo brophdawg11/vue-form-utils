@@ -26,7 +26,7 @@ storiesOf('WithValidation', module)
                 Below is a required/minlength=5 input:
                 <br>
                 <WithValidation @update="onUpdate">
-                    <input data-test="input" name="name" v-model="name" required minlength="5" />
+                    <input data-test="input" v-model="name" required minlength="5" />
                 </WithValidation>
 
                 <p>
@@ -61,7 +61,7 @@ storiesOf('WithValidation', module)
                 Below is a required/minlength=10 textarea:
                 <br>
                 <WithValidation @update="onUpdate">
-                    <textarea data-test="input" name="name" v-model="name" required minlength="10" />
+                    <textarea data-test="input" v-model="name" required minlength="10" />
                 </WithValidation>
 
                 <p>
@@ -96,7 +96,7 @@ storiesOf('WithValidation', module)
                 Below is a required select:
                 <br>
                 <WithValidation @update="onUpdate">
-                    <select data-test="input" name="value" v-model="value" required>
+                    <select data-test="input" v-model="value" required>
                         <option value="">Select a value...</option>
                         <option value="apple">Apple</option>
                         <option value="orange">Orange</option>
@@ -111,6 +111,85 @@ storiesOf('WithValidation', module)
 {{infoJson}}
                     </pre>
                 </p>
+            </div>
+        `,
+    }))
+    .add('All HTML5 Validations', () => ({
+        components: { WithValidation },
+        data() {
+            return {
+                field1: null,
+                field2: null,
+                field3: null,
+                field4: null,
+                field5: null,
+                field6: null,
+                field7: null,
+                field8: null,
+                field9: null,
+                info: {},
+            };
+        },
+        computed: {
+        },
+        methods: {
+            onUpdate(field, info) {
+                if (!this.info[field]) {
+                    this.$set(this.info, field, info);
+                } else {
+                    this.info[field] = info;
+                }
+            },
+            infoJson(field) {
+                return JSON.stringify(this.info[field] || null, null, 4);
+            },
+        },
+        template: `
+            <div>
+                <p>required</p>
+                <WithValidation @update="info => onUpdate('field1', info)">
+                    <input v-model="field1" required />
+                </WithValidation>
+                <pre>
+{{infoJson('field1')}}
+                </pre>
+
+                <hr>
+                <p>minlength=5, maxlength=10</p>
+                <WithValidation @update="info => onUpdate('field2', info)">
+                    <input v-model="field2" minlength="5" maxlength="10" />
+                </WithValidation>
+                <pre>
+{{infoJson('field2')}}
+                </pre>
+
+                <hr>
+                <p>type=email</p>
+                <WithValidation @update="info => onUpdate('field3', info)">
+                    <input type="email" v-model="field3" />
+                </WithValidation>
+                <pre>
+{{infoJson('field3')}}
+                </pre>
+
+                <hr>
+                <p>type=number, min=5, max=25, step=5</p>
+                <WithValidation @update="info => onUpdate('field4', info)">
+                    <input type="number" v-model="field4" min="5" max="25" step="5" />
+                </WithValidation>
+                <pre>
+{{infoJson('field4')}}
+                </pre>
+
+                <hr>
+                <p>pattern=[a-z]+</p>
+                <WithValidation @update="info => onUpdate('field5', info)">
+                    <input v-model="field5" pattern="[a-z]+" />
+                </WithValidation>
+                <pre>
+{{infoJson('field5')}}
+                </pre>
+
             </div>
         `,
     }))
@@ -146,7 +225,7 @@ storiesOf('WithValidation', module)
                 <input name="field1" v-model="field1" required />
                 <br>
                 <WithValidation :validations="validations" @update="onUpdate">
-                    <input name="name" v-model="field2" required :data-matches="field1" />
+                    <input v-model="field2" required :data-matches="field1" />
                 </WithValidation>
 
                 <p>

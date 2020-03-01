@@ -13,32 +13,55 @@ Notes
  */
 
 
+const isEmpty = (v) => v == null || v.length === 0;
+
 // Mapping of attributes driving validation to validityState fields and
 // corresponding validations
 const html5Validations = {
     required: {
         field: 'valueMissing',
+        validate: (v) => !isEmpty(v),
     },
     type: {
         field: 'typeMismatch',
+        validate() {
+            console.warn(
+                '[WithValidation] No fallback validation provided for HTML5 "type" attriubutes',
+            );
+            return true;
+        },
     },
     pattern: {
         field: 'patternMismatch',
-    },
-    maxlength: {
-        field: 'tooLong',
+        validate(v, attr) {
+            try {
+                const re = new RegExp(`^${attr}$`, 'u');
+                return isEmpty(v) || re.test(v);
+            } catch (e) {
+                console.warn(`[WithValidation] Unable to parse pattern RegExp: ${attr}`);
+                return false;
+            }
+        },
     },
     minlength: {
         field: 'tooShort',
+        validate: (v, attr) => isEmpty(v) || v.length >= parseInt(attr, 10),
+    },
+    maxlength: {
+        field: 'tooLong',
+        validate: (v, attr) => isEmpty(v) || v.length <= parseInt(attr, 10),
     },
     min: {
         field: 'rangeUnderflow',
+        validate: (v, attr) => isEmpty(v) || v >= parseInt(attr, 10),
     },
     max: {
         field: 'rangeOverflow',
+        validate: (v, attr) => isEmpty(v) || v <= parseInt(attr, 10),
     },
     step: {
         field: 'stepMismatch',
+        validate: (v, attr) => isEmpty(v) || v % parseFloat(attr) === 0,
     },
 };
 
@@ -95,19 +118,25 @@ export default {
     },
     methods: {
         checkValidity() {
-            if (!this.inputEl || !this.inputEl.validity) {
+            if (!this.inputEl) {
                 return;
             }
-            const { validity, value } = this.inputEl;
 
+            const { validity, value } = this.inputEl;
             const validateAttrs = (obj) => Object.entries(obj || {})
                 .reduce((acc, [attr, config]) => {
-                    if (config.field) {
+                    const attrValue = this.inputEl.getAttribute(attr);
+
+                    // Don't validate if the attribute doesn't exist
+                    if (attrValue == null) {
+                        return acc;
+                    }
+
+                    if (validity && config.field) {
                         // ValidityState validation
                         this.info[attr] = validity[config.field] === true;
                     } else if (config.validate) {
                         // Custom validation
-                        const attrValue = this.inputEl.getAttribute(attr);
                         this.info[attr] = config.validate(value, attrValue) !== true;
                     }
                     return acc && this.info[attr] === false;
