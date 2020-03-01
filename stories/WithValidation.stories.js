@@ -114,6 +114,102 @@ storiesOf('WithValidation', module)
             </div>
         `,
     }))
+    .add('Basic Usage/radio', () => ({
+        components: { WithValidation },
+        data() {
+            return {
+                value: null,
+                info: null,
+            };
+        },
+        computed: {
+            infoJson() {
+                return JSON.stringify(this.info, null, 4);
+            },
+        },
+        methods: {
+            onUpdate(info) {
+                this.info = info;
+            },
+        },
+        template: `
+            <div>
+                Below is a required/minlength=5 input:
+                <br>
+                <WithValidation @update="onUpdate">
+                    <div>
+                        <label>
+                            <input disabled type="radio" name="radio" v-model="value" value="yes" required />
+                            Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="radio" v-model="value" value="no" required />
+                            No
+                        </label>
+                        <label>
+                            <input type="radio" name="radio" v-model="value" value="dont-care" required />
+                            Don't Care
+                        </label>
+                    </div>
+                </WithValidation>
+
+                <p>
+                    And the <code>info</code> object for this input is:
+                    <pre data-test="info">
+{{infoJson}}
+                    </pre>
+                </p>
+            </div>
+        `,
+    }))
+    .add('Basic Usage/checkbox', () => ({
+        components: { WithValidation },
+        data() {
+            return {
+                values: [],
+                info: null,
+            };
+        },
+        computed: {
+            infoJson() {
+                return JSON.stringify(this.info, null, 4);
+            },
+        },
+        methods: {
+            onUpdate(info) {
+                this.info = info;
+            },
+        },
+        template: `
+            <div>
+                Below is a required/minlength=5 input:
+                <br>
+                <WithValidation @update="onUpdate">
+                    <div>
+                        <label>
+                            <input type="checkbox" name="checkbox" v-model="values" value="1" required />
+                            1
+                        </label>
+                        <label>
+                            <input type="checkbox" name="checkbox" v-model="values" value="2" required />
+                            2
+                        </label>
+                        <label>
+                            <input type="checkbox" name="checkbox" v-model="values" value="3" required />
+                            3
+                        </label>
+                    </div>
+                </WithValidation>
+
+                <p>
+                    And the <code>info</code> object for this input is:
+                    <pre data-test="info">
+{{infoJson}}
+                    </pre>
+                </p>
+            </div>
+        `,
+    }))
     .add('All HTML5 Validations', () => ({
         components: { WithValidation },
         data() {

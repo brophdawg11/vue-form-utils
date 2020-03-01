@@ -26,6 +26,8 @@ module.exports = {
         'max-len': ['error', { code: 100, ignoreUrls: true }],
         // allow wearn ande rror consoles
         'no-console': ['error', { allow: ['warn', 'error'] }],
+        // Allow ++ and --
+        'no-plusplus': 'off',
         // Don't enforce one-var for now
         'one-var': 'off',
         // Put operators at the end of the lint (?, :, &&, ||)
