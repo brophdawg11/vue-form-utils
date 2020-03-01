@@ -7,7 +7,7 @@ storiesOf('WithValidation', module)
         components: { WithValidation },
         data() {
             return {
-                name: '',
+                name: null,
                 info: null,
             };
         },
@@ -42,7 +42,7 @@ storiesOf('WithValidation', module)
         components: { WithValidation },
         data() {
             return {
-                name: '',
+                name: null,
                 info: null,
             };
         },
@@ -107,6 +107,50 @@ storiesOf('WithValidation', module)
 
                 <p>
                     And the <code>info</code> object for this textarea is:
+                    <pre data-test="info">
+{{infoJson}}
+                    </pre>
+                </p>
+            </div>
+        `,
+    }))
+    .add('Custom Validations', () => ({
+        components: { WithValidation },
+        data() {
+            return {
+                field1: null,
+                field2: null,
+                info: null,
+                validations: {
+                    'data-matches': {
+                        validate: (v, attr) => v === attr,
+                    },
+                },
+            };
+        },
+        computed: {
+            infoJson() {
+                return JSON.stringify(this.info, null, 4);
+            },
+        },
+        methods: {
+            onUpdate(info) {
+                this.info = info;
+            },
+        },
+        template: `
+            <div>
+                Same usage of a custom validation to see if two fields match
+                <br>
+
+                <input name="field1" v-model="field1" required />
+                <br>
+                <WithValidation :validations="validations" @update="onUpdate">
+                    <input name="name" v-model="field2" required :data-matches="field1" />
+                </WithValidation>
+
+                <p>
+                    And the <code>info</code> object for this second input is:
                     <pre data-test="info">
 {{infoJson}}
                     </pre>

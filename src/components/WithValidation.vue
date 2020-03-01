@@ -15,7 +15,7 @@ Notes
 
 // Mapping of attributes driving validation to validityState fields and
 // corresponding validations
-const validationAttrs = {
+const html5Validations = {
     required: {
         field: 'valueMissing',
     },
@@ -55,14 +55,21 @@ function findInput(el) {
 
 export default {
     name: 'WithValidation',
+    props: {
+        validations: {
+            type: Object,
+            default: null,
+        },
+    },
     data() {
+        const validationProps = (obj) => Object.keys(obj || {})
+            .reduce((acc, attr) => Object.assign(acc, { [attr]: false }), {});
         return {
             info: {
                 valid: true,
                 touched: false,
-                ...Object.keys(validationAttrs).reduce((acc, attr) => Object.assign(acc, {
-                    [attr]: false,
-                }), {}),
+                ...validationProps(html5Validations),
+                ...validationProps(this.validations),
             },
         };
     },
@@ -91,11 +98,22 @@ export default {
             if (!this.inputEl || !this.inputEl.validity) {
                 return;
             }
-            const { validity } = this.inputEl;
-            this.info.valid = Object.entries(validationAttrs).reduce((acc, [attr, config]) => {
-                this.info[attr] = validity[config.field] === true;
-                return acc && this.info[attr] === false;
-            }, true);
+            const { validity, value } = this.inputEl;
+
+            const validateAttrs = (obj) => Object.entries(obj || {})
+                .reduce((acc, [attr, config]) => {
+                    if (config.field) {
+                        // ValidityState validation
+                        this.info[attr] = validity[config.field] === true;
+                    } else if (config.validate) {
+                        // Custom validation
+                        const attrValue = this.inputEl.getAttribute(attr);
+                        this.info[attr] = config.validate(value, attrValue) !== true;
+                    }
+                    return acc && this.info[attr] === false;
+                }, true);
+
+            this.info.valid = validateAttrs(html5Validations) && validateAttrs(this.validations);
         },
         setInputEl() {
             this.inputEl = findInput(this.$el);
