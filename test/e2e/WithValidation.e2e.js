@@ -54,4 +54,45 @@ describe('WithValidation', () => {
         // });
     });
 
+    it('Indicates proper touched status', () => {
+        cy.visit('storybook-static/index.html');
+        cy.get('#explorerwithvalidation--basic-usage').click();
+        cy.get('#storybook-preview-iframe')
+            .then(($iframe) => cy.wrap($iframe.contents().find('body')).as('iframe'));
+
+        // Default empty and invalid
+        info().should(($info) => {
+            expect(JSON.parse($info[0].textContent.trim())).to.deep.equal({
+                valid: false,
+                touched: false,
+                required: true,
+                type: false,
+                pattern: false,
+                maxlength: false,
+                minlength: false,
+                min: false,
+                max: false,
+                step: false,
+            });
+        });
+
+        // Unsure if this is the same issue as
+        // https://github.com/cypress-io/cypress/issues/1930
+        // input().focus().blur();
+        // info().should(($info) => {
+        //     expect(JSON.parse($info[0].textContent.trim())).to.deep.equal({
+        //         valid: false,
+        //         touched: true,
+        //         required: true,
+        //         type: false,
+        //         pattern: false,
+        //         maxlength: false,
+        //         minlength: false,
+        //         min: false,
+        //         max: false,
+        //         step: false,
+        //     });
+        // });
+    });
+
 });

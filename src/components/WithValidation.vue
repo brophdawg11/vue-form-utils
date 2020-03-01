@@ -75,12 +75,19 @@ export default {
             },
         },
     },
+    mounted() {
+        if (!this.setInputEl()) {
+            return;
+        }
+        // eslint-disable-next-line no-return-assign
+        this.inputEl.addEventListener('blur', () => this.info.touched = true, { once: true });
+    },
     updated() {
+        this.setInputEl();
         this.checkValidity();
     },
     methods: {
         checkValidity() {
-            this.inputEl = findInput(this.$el);
             if (!this.inputEl || !this.inputEl.validity) {
                 return;
             }
@@ -89,6 +96,14 @@ export default {
                 this.info[attr] = validity[config.field] === true;
                 return acc && this.info[attr] === false;
             }, true);
+        },
+        setInputEl() {
+            this.inputEl = findInput(this.$el);
+            if (!this.inputEl == null) {
+                console.warn('[WithValidation] No child input element found');
+                return false;
+            }
+            return true;
         },
     },
     render() {
