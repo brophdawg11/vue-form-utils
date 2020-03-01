@@ -1,25 +1,23 @@
 {
-  "name": "vue-dummy-published-component-1",
-  "version": "1.0.11",
-  "description": "Dummy repo for a sample Vue component published to npm",
+  "name": "vue-form-utils",
+  "version": "0.1.0",
+  "description": "A collection of form utilities for working with forms in Vue",
   "author": "matt@brophy.org",
   "license": "MIT",
-  "main": "dist/dummy-component.umd.js",
-  "module": "dist/dummy-component.esm.js",
-  "unpkg": "dist/dummy-component.min.js",
-  "browser": {
-    "./sfc": "src/DummyComponent.vue"
-  },
+  "main": "dist/vue-form-utils.umd.js",
+  "module": "dist/vue-form-utils.esm.js",
+  "unpkg": "dist/vue-form-utils.min.js",
+  "browser": "src/index.js",
   "files": [
     "dist/*",
     "src/*"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/brophdawg11/vue-dummy-published-component.git"
+    "url": "https://github.com/brophdawg11/vue-form-utils.git"
   },
   "bugs": {
-    "url": "https://github.com/brophdawg11/vue-dummy-published-component/issues"
+    "url": "https://github.com/brophdawg11/vue-form-utils/issues"
   },
   "scripts": {
     "build": "npm run build:unpkg & npm run build:es & npm run build:umd",
@@ -33,10 +31,14 @@
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
     "test:unit": "jest",
+    "test:unit:watch": "jest --watch",
     "storybook": "start-storybook -p 6006",
     "storybook:build": "build-storybook"
   },
   "dependencies": {},
+  "peerDependencies": {
+    "vue": "2.*"
+  },
   "devDependencies": {
     "@babel/core": "7.8.3",
     "@babel/preset-env": "7.8.3",

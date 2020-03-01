@@ -23,12 +23,18 @@ storiesOf('WithValidation', module)
         },
         template: `
             <div>
+                Below is a required/minlength=5 input:
+                <br>
                 <WithValidation @update="onUpdate">
-                    <input name="name" v-model="name" required />
+                    <input data-test="input" name="name" v-model="name" required minlength="5" />
                 </WithValidation>
-                <pre>
+
+                <p>
+                    And the <code>info</code> object for this input is:
+                    <pre data-test="info">
 {{validityJson}}
-                </pre>
+                    </pre>
+                </p>
             </div>
         `,
     }));

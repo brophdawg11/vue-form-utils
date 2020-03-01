@@ -1,6 +1,4 @@
 <script>
-import Vue from 'vue';
-
 /*
 Design Goals
  - Use normal HTML% validation attres
@@ -27,10 +25,10 @@ const validationAttrs = {
     pattern: {
         field: 'patternMismatch',
     },
-    maxLength: {
+    maxlength: {
         field: 'tooLong',
     },
-    minLength: {
+    minlength: {
         field: 'tooShort',
     },
     min: {
