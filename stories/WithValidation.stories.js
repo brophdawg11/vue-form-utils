@@ -13,23 +13,21 @@ storiesOf('WithValidation', module)
         },
         computed: {
             validityJson() {
-                console.log('validityJson', JSON.stringify(this.validity, null, 4));
                 return JSON.stringify(this.validity, null, 4);
             },
         },
         methods: {
             onUpdate(validity) {
-                console.log('onUpdate', validity);
                 this.validity = validity;
             },
         },
         template: `
             <div>
                 <WithValidation @update="onUpdate">
-                    <input name="name" v-model="name" />
+                    <input name="name" v-model="name" required />
                 </WithValidation>
                 <pre>
-                    {{validityJson}}
+{{validityJson}}
                 </pre>
             </div>
         `,

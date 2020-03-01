@@ -1,4 +1,6 @@
 <script>
+import Vue from 'vue';
+
 /*
 Design Goals
  - Use normal HTML% validation attres
@@ -11,6 +13,36 @@ Design Goals
 Notes
  - Only works with v-model - that triggers re-render on update
  */
+
+
+// Mapping of attributes driving validation to validityState fields and
+// corresponding validations
+const validationAttrs = {
+    required: {
+        field: 'valueMissing',
+    },
+    type: {
+        field: 'typeMismatch',
+    },
+    pattern: {
+        field: 'patternMismatch',
+    },
+    maxLength: {
+        field: 'tooLong',
+    },
+    minLength: {
+        field: 'tooShort',
+    },
+    min: {
+        field: 'rangeUnderflow',
+    },
+    max: {
+        field: 'rangeOverflow',
+    },
+    step: {
+        field: 'stepMismatch',
+    },
+};
 
 const inputTags = ['input', 'select', 'textarea'];
 function findInput(el) {
@@ -25,24 +57,44 @@ function findInput(el) {
 
 export default {
     name: 'WithValidation',
-    mounted() {
-        this.inputEl = findInput(this.$el);
-        this.emitValidity();
+    data() {
+        return {
+            info: {
+                valid: true,
+                touched: false,
+                ...Object.keys(validationAttrs).reduce((acc, attr) => Object.assign(acc, {
+                    [attr]: false,
+                }), {}),
+            },
+        };
+    },
+    watch: {
+        info: {
+            immediate: true,
+            deep: true,
+            handler(info) {
+                this.$emit('update', info);
+            },
+        },
     },
     updated() {
-        console.log('updated');
-        this.inputEl = findInput(this.$el);
-        this.emitValidity();
-    },
-    render() {
-        console.log('render');
-        return this.$slots.default[0];
+        this.checkValidity();
     },
     methods: {
-        emitValidity() {
-            console.log('emitValidity');
-            this.$emit('update', this.inputEl.validity);
+        checkValidity() {
+            this.inputEl = findInput(this.$el);
+            if (!this.inputEl || !this.inputEl.validity) {
+                return;
+            }
+            const { validity } = this.inputEl;
+            this.info.valid = Object.entries(validationAttrs).reduce((acc, [attr, config]) => {
+                this.info[attr] = validity[config.field] === true;
+                return acc && this.info[attr] === false;
+            }, true);
         },
+    },
+    render() {
+        return this.$slots.default[0];
     },
 };
 </script>
