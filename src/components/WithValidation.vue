@@ -190,6 +190,16 @@ export default {
                 .filter((k) => k !== 'touched' && k !== 'valid')
                 .forEach((k) => Object.assign(this.info, { [k]: infos.every((i) => i[k]) }));
             this.info.valid = infos.some((i) => i.valid);
+            this.$nextTick(this.setAriaAttributes);
+        },
+        setAriaAttributes() {
+            this.inputEls.forEach((el) => {
+                if (this.info.valid) {
+                    el.removeAttribute('aria-invalid');
+                } else {
+                    el.setAttribute('aria-invalid', 'true');
+                }
+            });
         },
         setInputEls() {
             const inputs = findInputs(this.$el);
