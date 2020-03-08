@@ -13,7 +13,9 @@ Notes
  */
 
 
+const inputTags = ['input', 'select', 'textarea'];
 const isEmpty = (v) => v == null || v.length === 0;
+const isMulti = (el) => ['checkbox', 'radio'].includes(el.getAttribute('type'));
 
 // Mapping of attributes driving validation to validityState fields and
 // corresponding validations
@@ -65,35 +67,25 @@ const html5Validations = {
     },
 };
 
-const inputTags = ['input', 'select', 'textarea'];
-function findInput(el, acc) {
+function findInputs(el) {
+    const inputs = [];
+
     if (!el) {
-        return null;
+        return inputs;
     }
 
-    const isRadioOrCheckbox = ['radio', 'checkbox'].includes(el.getAttribute('type'));
     if (inputTags.includes(el.tagName.toLowerCase()) &&
         // For radios/checkboxes, ignore disabled inputs, since they do not have
         // representative ValidityState values
-        (!isRadioOrCheckbox || el.getAttribute('disabled') == null)) {
-        if (!acc) {
-            return el;
-        }
-        acc.push(el);
+        (!isMulti(el) || el.getAttribute('disabled') == null)) {
+        inputs.push(el);
     }
 
     for (let i = 0; i < el.children.length; i++) {
-        if (acc) {
-            findInput(el.children[i], acc);
-        } else {
-            const descendant = findInput(el.children[i]);
-            if (descendant) {
-                return descendant;
-            }
-        }
+        inputs.push(...findInputs(el.children[i]));
     }
 
-    return acc || null;
+    return inputs;
 }
 
 function hasAttrError(attr, attrValue, config, validity, value) {
@@ -137,7 +129,6 @@ export default {
         const validationProps = (obj) => Object.keys(obj || {})
             .reduce((acc, attr) => Object.assign(acc, { [attr]: false }), {});
         return {
-            isCheckbox: false,
             info: {
                 valid: true,
                 touched: false,
@@ -156,65 +147,63 @@ export default {
         },
     },
     mounted() {
-        if (!this.setInputEl()) {
+        if (!this.setInputEls()) {
             return;
         }
-        if (this.isCheckbox) {
-            findInput(this.$el, []).forEach((el) => el.addEventListener(
-                'blur',
-                // eslint-disable-next-line no-return-assign
-                () => this.info.touched = true,
-                { once: true },
-            ));
-        } else {
-            // eslint-disable-next-line no-return-assign
-            this.inputEl.addEventListener('blur', () => this.info.touched = true, { once: true });
-        }
+        // eslint-disable-next-line no-return-assign
+        this._boundBlurListener = () => this.info.touched = true;
+        this.inputEls.forEach((el) => el.addEventListener(
+            'blur',
+            this._boundBlurListener,
+            { once: true },
+        ));
     },
     updated() {
-        if (!this.setInputEl()) {
+        if (!this.setInputEls()) {
             return;
         }
         this.checkValidity();
     },
+    beforeDestroy() {
+        if (!this.inputEls) {
+            return;
+        }
+        this.inputEls.forEach((el) => el.removeEventListener('blur', this._boundBlurListener));
+    },
     methods: {
         checkValidity() {
-            // Checkboxes can all have individual ValidityState snapshots, so we must
+            // Checkboxes/Radios can all have individual ValidityState snapshots, so we must
             // traverse them all and combine them down to a single object representative
-            // of the group
-            if (this.isCheckbox) {
-                const inputs = findInput(this.$el, []);
-                const infos = inputs.map((el) => {
-                    const info = {};
-                    const htmlValid = validateAttrs(html5Validations, info, el);
-                    const customValid = validateAttrs(this.validations, info, el);
-                    info.valid = htmlValid && customValid;
-                    return info;
-                });
-                Object.keys(this.info).forEach((k) => {
-                    if (k === 'touched') {
-                        return;
-                    }
-                    if (k === 'valid') {
-                        this.info[k] = infos.some((i) => i[k]);
-                    } else {
-                        this.info[k] = infos.every((i) => i[k]);
-                    }
-                });
-                return;
-            }
-
-            const htmlValid = validateAttrs(html5Validations, this.info, this.inputEl);
-            const customValid = validateAttrs(this.validations, this.info, this.inputEl);
-            this.info.valid = htmlValid && customValid;
+            // of the group.  Run this logic all the time, with the expectation that we won't
+            // have multiple inputs in non-radio/checkbox cases (we warn against this in
+            // setInputEls)
+            const infos = this.inputEls.map((el) => {
+                const info = {};
+                const htmlValid = validateAttrs(html5Validations, info, el);
+                const customValid = validateAttrs(this.validations, info, el);
+                info.valid = htmlValid && customValid;
+                return info;
+            });
+            // Update all validations, except touched and valid.  touched is handled
+            // independently via the listeners, and valid is handled by itself
+            Object.keys(this.info)
+                .filter((k) => k !== 'touched' && k !== 'valid')
+                .forEach((k) => Object.assign(this.info, { [k]: infos.every((i) => i[k]) }));
+            this.info.valid = infos.some((i) => i.valid);
         },
-        setInputEl() {
-            this.inputEl = findInput(this.$el);
-            if (this.inputEl == null) {
+        setInputEls() {
+            const inputs = findInputs(this.$el);
+            if (inputs.length === 0) {
                 console.warn('[WithValidation] No child input element found');
                 return false;
             }
-            this.isCheckbox = this.inputEl.getAttribute('type') === 'checkbox';
+            this.inputEls = Array.from(inputs);
+            if (!isMulti(this.inputEls[0]) && this.inputEls.length > 1) {
+                console.warn(
+                    '[WithValidation] Should only contain multiple input children for',
+                    'radio/checkbox inputs',
+                );
+            }
             return true;
         },
     },

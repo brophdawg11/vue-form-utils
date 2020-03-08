@@ -25,7 +25,9 @@ module.exports = {
         // Max length of 100 characters in source code
         'max-len': ['error', { code: 100, ignoreUrls: true }],
         // allow wearn ande rror consoles
-        'no-console': ['error', { allow: ['warn', 'error'] }],
+        'no-console': ['error', { allow:  ['warn', 'error'] }],
+        // Allow dangling underscores
+        'no-underscore-dangle': ['off'],
         // Allow ++ and --
         'no-plusplus': 'off',
         // Don't enforce one-var for now

@@ -139,7 +139,7 @@ storiesOf('WithValidation', module)
                 <WithValidation @update="onUpdate">
                     <div>
                         <label>
-                            <input disabled type="radio" name="radio" v-model="value" value="yes" required />
+                            <input type="radio" name="radio" v-model="value" value="yes" required />
                             Yes
                         </label>
                         <label>
