@@ -12,7 +12,6 @@ Notes
  - Only works with v-model - that triggers re-render on update
  */
 
-
 const inputTags = ['input', 'select', 'textarea'];
 const isEmpty = (v) => v == null || v.length === 0;
 const isMulti = (el) => ['checkbox', 'radio'].includes(el.getAttribute('type'));
