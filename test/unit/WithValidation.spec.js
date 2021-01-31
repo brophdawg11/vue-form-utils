@@ -14,7 +14,7 @@ describe('WithValidation', () => {
                 </WithValidation>
             `,
         });
-        expect(cmp.contains('input')).toBe(true);
+        expect(cmp.find('input') != null).toBe(true);
     });
 
 });
