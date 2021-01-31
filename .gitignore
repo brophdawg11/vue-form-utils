@@ -2,3 +2,4 @@ cypress/
 dist/
 node_modules/
 storybook-static/
+*.code-workspace
