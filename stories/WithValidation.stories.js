@@ -1,6 +1,6 @@
 import { storiesOf } from '@storybook/vue';
 
-import WithValidation from '../src/components/WithValidation.vue';
+import WithValidation from '../src/WithValidation.vue';
 
 storiesOf('WithValidation', module)
     .add('Basic Usage/input', () => ({

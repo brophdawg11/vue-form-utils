@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import WithValidation from '../../src/components/WithValidation.vue';
+import WithValidation from '../../src/WithValidation.vue';
 
 describe('WithValidation', () => {
 
